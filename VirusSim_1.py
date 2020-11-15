@@ -35,7 +35,7 @@ def spread():  # this is the epidemic engine where sick people infect others
     
     # now lets get people sick
     PofInfecting=R/(RecoveryPeriod*3)
-    Probaility = (PofInfecting)
+    Probaility = (PofInfecting)*1.5 #fudge factor LOL
     for x in range(1,PopSize-1):  # move through Population Array
         for y in range(1,PopSize-1):
             PersonIndex=int(Population[x][y])  # find the index of the person
