@@ -28,14 +28,14 @@ def spread():  # this is the epidemic engine where sick people infect others
     # first let's loop for the population and add +1 sick days to all sick people and declare people immune if sick for 6 days
     for PersonIndex in range(len(HealthPopulation)):
         dayssick=HealthPopulation[PersonIndex][1]
-        if(dayssick<6 and HealthPopulation[PersonIndex][0]==1):
+        if(dayssick<RecoveryPeriod+1 and HealthPopulation[PersonIndex][0]==1):
             HealthPopulation[PersonIndex][1]+=1 # increment days sick
-            if(HealthPopulation[PersonIndex][1]>5):  # if they have been sick longer than 5 days
+            if(HealthPopulation[PersonIndex][1]>RecoveryPeriod):  # if they have been sick longer than recovery period
                 HealthPopulation[PersonIndex][0]=2 # make them immune
     
     # now lets get people sick
     PofInfecting=R/(RecoveryPeriod*3)
-    Probaility = (PofInfecting)*1.5 #fudge factor LOL
+    Probaility = (PofInfecting) 
     for x in range(1,PopSize-1):  # move through Population Array
         for y in range(1,PopSize-1):
             PersonIndex=int(Population[x][y])  # find the index of the person
@@ -81,10 +81,7 @@ def tally(): #keep running score of the population
     return(notsickcount,sickcount,immunecount)
 
 #start of program
-PopSize=100 #population will be PopSize x PopSize big
-Population = np.zeros( (PopSize, PopSize) )  # create population each person will have an ID number, 0 to PopSize*PopSize
-HealthPopulation= np.zeros( (PopSize*PopSize,2) )  # this is where we track if not infected, sick, recovered/immune
-                                                    # [person ID number, healthstatus, days ill]
+
 #Every starts out 0, not infected
 # 0 not infected
 # 1 infected
@@ -92,11 +89,14 @@ HealthPopulation= np.zeros( (PopSize*PopSize,2) )  # this is where we track if n
 #populate the HealthPopoulation array index=person id, column 0= 0 (not infected) column 1=days sick (not used yet)  
 
 # The simulation parameters, play with these to experiment
-R=1.3   # best estimate current for world try others at https://en.wikipedia.org/wiki/Basic_reproduction_number
-RecoveryPeriod=5 #days
-SeedNumber=5 # in percent
-DaysToRunSim=70 # length of epidemic 
-epidemic = np.array([0,0,0,0]) # matrix to store, daycount, not infected ever, sick, immune
+PopSize=100 #population will be PopSize x PopSize big
+Population = np.zeros( (PopSize, PopSize) )  # create population each person will have an ID number, 0 to PopSize*PopSize
+HealthPopulation= np.zeros( (PopSize*PopSize,2) )  # this is where we track if not infected, sick, recovered/immune
+R=4.0  # best estimate current for world try others at https://en.wikipedia.org/wiki/Basic_reproduction_number
+RecoveryPeriod=10 #days
+SeedNumber=1 # in percent
+DaysToRunSim=60 # length of epidemic 
+epidemic = np.array([PopSize*PopSize,0,0,0]) # matrix to store, daycount, not infected ever, sick, immune
 
 #print initial epidemic parameters
 print("Population Size=",PopSize*PopSize,"R0=",R,"Seed %=",SeedNumber,"Epidemic Run in Day=",DaysToRunSim)
@@ -112,13 +112,7 @@ for x in range(0,PopSize):
 # lets seed the population with some sick people who don't know they are sick
 seed(SeedNumber)
 
-# printPop(Population)
-# print("")
-# printPop(HealthPopulation)
-# print("")
-
 print("Day, Not Sick, Sick, Immune")
-#print(epidemic[0],epidemic[1],epidemic[2],epidemic[3],epidemic[4])    # print daily score of epidemic
 
 for Day in range(1,DaysToRunSim):
     spread()
@@ -126,14 +120,19 @@ for Day in range(1,DaysToRunSim):
     notsick,sick,immune=tally()  # count not sick, sick, immune for the day
     addrow = np.array([Day,notsick,sick,immune]) # assemble count into array for adding below
     epidemic = np.vstack ((epidemic,addrow))  # add new day counts to the bootom of epidemic array
-    print(epidemic[Day][0],epidemic[Day][1],epidemic[Day][2],epidemic[Day][3])    # print daily score of epidemic
+    print(epidemic[Day][0],",",epidemic[Day][1],",",epidemic[Day][2],",",epidemic[Day][3])    # print daily score of epidemic
 
 # plot
+fig, ax = plt.subplots(1,figsize=(15, 6))
+ax = plt.axes()
 title='My Epidemic Population Size='+str(PopSize*PopSize)+' R0='+str(R)+' Seed Infected %='+str(SeedNumber)
 plt.title(title)  
 plt.xlabel("Day")  
 plt.ylabel("People")  
 plt.plot(epidemic[:,2], color ="red", label='Sick')
 plt.plot(epidemic[:,3], color ="green", label='Immnune')
+plt.plot(epidemic[:,1], color ="blue", label='Suspectible')
+plt.xlim([1,DaysToRunSim])
 plt.legend()
 plt.show()
+
