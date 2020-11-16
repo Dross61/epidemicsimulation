@@ -25,7 +25,7 @@ def spread():  # this is the epidemic engine where sick people infect others
     # why only 3 people? Because it's easy to simulate, we are picking the person to right, diagonal left down 
     # and just below in the Population array, we shuffle the array every day to simulate the person moving through society
     
-    # first let's loop for the population and add +1 sick days to all sick people and declare people immune if sick for 6 days
+    # first let's loop for the population and add +1 sick days to all sick people and declare people immune if sick for RecoveryPeriod days
     for PersonIndex in range(len(HealthPopulation)):
         dayssick=HealthPopulation[PersonIndex][1]
         if(dayssick<RecoveryPeriod+1 and HealthPopulation[PersonIndex][0]==1):
@@ -82,19 +82,19 @@ def tally(): #keep running score of the population
 
 #start of program
 
-#Every starts out 0, not infected
+#Everyone starts out 0, not infected
 # 0 not infected
 # 1 infected
 # 2 recovered, immune and can't spread
-#populate the HealthPopoulation array index=person id, column 0= 0 (not infected) column 1=days sick (not used yet)  
+#populate the HealthPopoulation array index=person id, column 0= 0 (not infected) column 1=days sick 
 
 # The simulation parameters, play with these to experiment
-PopSize=100 #population will be PopSize x PopSize big
+PopSize=100 #population will be PopSize x PopSize 
 Population = np.zeros( (PopSize, PopSize) )  # create population each person will have an ID number, 0 to PopSize*PopSize
 HealthPopulation= np.zeros( (PopSize*PopSize,2) )  # this is where we track if not infected, sick, recovered/immune
 R=4.0  # best estimate current for world try others at https://en.wikipedia.org/wiki/Basic_reproduction_number
 RecoveryPeriod=10 #days
-SeedNumber=1 # in percent
+SeedNumber=1 # in percent to start the epidemic off, someone has to
 DaysToRunSim=60 # length of epidemic 
 epidemic = np.array([PopSize*PopSize,0,0,0]) # matrix to store, daycount, not infected ever, sick, immune
 
